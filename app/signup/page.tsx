@@ -48,12 +48,9 @@ async function handleSignup(e: React.FormEvent<HTMLFormElement>) {
       } else {
         setMessage(error.message);
       }
-
       return;
     }
 
-    // Supabase may return an empty identities array
-    // when the email is already registered.
     if (data.user && data.user.identities?.length === 0) {
       setMessage(
         "An account with this email may already exist. Please sign in or reset your password."
@@ -62,27 +59,6 @@ async function handleSignup(e: React.FormEvent<HTMLFormElement>) {
     }
 
     if (data.user && data.session) {
-      const astronautId = `AST-${data.user.id
-        .replace(/-/g, "")
-        .slice(0, 8)
-        .toUpperCase()}`;
-
-      const { error: profileError } = await supabase
-        .from("profiles")
-        .insert({
-          id: data.user.id,
-          full_name: cleanName,
-          astronaut_id: astronautId,
-          mission_name: null,
-        });
-
-      if (profileError) {
-        setMessage(
-          `Account created, but profile setup failed: ${profileError.message}`
-        );
-        return;
-      }
-
       router.push("/");
       router.refresh();
       return;
