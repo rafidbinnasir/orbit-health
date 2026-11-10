@@ -147,14 +147,84 @@ export async function POST(request: Request) {
       }
     }
 
-    return NextResponse.json(
-      {
-        reading: data,
-        insights: savedInsights,
-        insightErrors,
+    // Run the Isolation Forest model through the Render API.
+let mlPrediction = null;
+let mlPredictionError = null;
+
+try {
+  const mlApiUrl = process.env.ML_API_URL;
+  const mlApiSecret = process.env.ML_API_SECRET;
+
+  if (!mlApiUrl || !mlApiSecret) {
+    throw new Error("ML API environment variables are missing");
+  }
+
+  const mlResponse = await fetch(
+    `${mlApiUrl.replace(/\/$/, "")}/predict`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-API-Key": mlApiSecret,
       },
-      { status: 201 }
-    );
+      body: JSON.stringify({
+        heart_rate: data.heart_rate,
+        spo2: data.spo2,
+        temperature: data.temperature_c,
+      }),
+      cache: "no-store",
+    }
+  );
+
+  if (!mlResponse.ok) {
+    throw new Error(`ML API returned ${mlResponse.status}`);
+  }
+
+  const result = await mlResponse.json();
+
+  if (
+    ![-1, 1].includes(result.prediction) ||
+    !["NORMAL", "ANOMALY"].includes(result.status) ||
+    !Number.isFinite(result.anomaly_score)
+  ) {
+    throw new Error("Invalid ML prediction response");
+  }
+
+  // Save the prediction in Supabase.
+  const { data: savedPrediction, error: predictionError } =
+    await supabase
+      .from("ml_predictions")
+      .insert({
+        reading_id: data.id,
+        user_id: user.id,
+        prediction: result.prediction,
+        status: result.status,
+        anomaly_score: result.anomaly_score,
+      })
+      .select()
+      .single();
+
+  if (predictionError) {
+    throw new Error(predictionError.message);
+  }
+
+  mlPrediction = savedPrediction;
+
+} catch (error) {
+  console.error("ML prediction failed:", error);
+  mlPredictionError = "Could not generate or save ML prediction";
+}
+
+return NextResponse.json(
+  {
+    reading: data,
+    insights: savedInsights,
+    insightErrors,
+    mlPrediction,
+    mlPredictionError,
+  },
+  { status: 201 }
+);
 
   } catch {
     return NextResponse.json(
