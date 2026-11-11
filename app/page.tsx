@@ -342,19 +342,24 @@ useEffect(() => {
             {error}
           </div>
         )}
-        {/* MISSION TELEMETRY: HEALTH INSIGHTS + COMPACT VITALS */}
-        <div className="mb-10 grid grid-cols-1 items-stretch gap-5 lg:grid-cols-3">
-         
-          <div className="min-w-0 lg:col-span-2">
-            <HealthInsights />
-          </div>
-           {/* MACHINE LEARNING ANOMALY DETECTION */}
-<MLAnomalyAlerts />
+        
 
-          <div className="min-w-0 lg:col-span-1">
-            <CompactVitals readings={readings} loading={loading} />
-          </div>
-        </div>
+{/* MISSION TELEMETRY */}
+<div className="mb-10 grid grid-cols-1 items-stretch gap-5 lg:grid-cols-4">
+  <div className="min-w-0 lg:col-span-2">
+    <HealthInsights />
+  </div>
+
+  <div className="min-w-0 lg:col-span-1">
+    <CompactVitals readings={readings} loading={loading} />
+  </div>
+
+  <div className="min-w-0 lg:col-span-1">
+    <MLAnomalyAlerts />
+  </div>
+</div>
+
+
 
         {/* 3D ANATOMICAL TELEMETRY MONITOR */}
         <section id="anatomy" className="mb-10 scroll-mt-24">
