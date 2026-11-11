@@ -344,11 +344,12 @@ useEffect(() => {
         )}
         {/* MISSION TELEMETRY: HEALTH INSIGHTS + COMPACT VITALS */}
         <div className="mb-10 grid grid-cols-1 items-stretch gap-5 lg:grid-cols-3">
-          {/* MACHINE LEARNING ANOMALY DETECTION */}
-<MLAnomalyAlerts />
+         
           <div className="min-w-0 lg:col-span-2">
             <HealthInsights />
           </div>
+           {/* MACHINE LEARNING ANOMALY DETECTION */}
+<MLAnomalyAlerts />
 
           <div className="min-w-0 lg:col-span-1">
             <CompactVitals readings={readings} loading={loading} />
