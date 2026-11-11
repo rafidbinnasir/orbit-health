@@ -345,7 +345,7 @@ useEffect(() => {
         
 
 {/* MISSION TELEMETRY */}
-<div className="mb-10 grid grid-cols-1 items-stretch gap-5 lg:grid-cols-4">
+<div className="mb-6 grid grid-cols-1 items-stretch gap-5 lg:grid-cols-3">
   <div className="min-w-0 lg:col-span-2">
     <HealthInsights />
   </div>
@@ -353,10 +353,11 @@ useEffect(() => {
   <div className="min-w-0 lg:col-span-1">
     <CompactVitals readings={readings} loading={loading} />
   </div>
+</div>
 
-  <div className="min-w-0 lg:col-span-1">
-    <MLAnomalyAlerts />
-  </div>
+{/* MACHINE LEARNING ANOMALY DETECTION */}
+<div className="mb-10">
+  <MLAnomalyAlerts />
 </div>
 
 
