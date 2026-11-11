@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Orbit Heath",
-  description: "Astronaut health monitoring and mission profile dashboard.",
+  title: "ORBIT Health — Astronaut Biometric Telemetry & Mission Control",
+  description: "Advanced astronaut health monitoring, clinical biometric telemetry, and mission profile platform.",
 };
 
 export default function RootLayout({

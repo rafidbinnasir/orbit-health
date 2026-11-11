@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState } from "react";
@@ -14,9 +13,7 @@ export default function LoginPage() {
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
 
-  async function handleLogin(
-    event: React.FormEvent<HTMLFormElement>
-  ) {
+  async function handleLogin(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setMessage("");
     setLoading(true);
@@ -25,32 +22,32 @@ export default function LoginPage() {
       const supabase = createClient();
 
       const { data, error } = await supabase.auth.signInWithPassword({
-  email,
-  password,
-});
+        email,
+        password,
+      });
 
-if (error) {
-  throw error;
-}
+      if (error) {
+        throw error;
+      }
 
-const { data: roleData, error: roleError } = await supabase
-  .from("user_roles")
-  .select("role")
-  .eq("user_id", data.user.id)
-  .single();
+      const { data: roleData, error: roleError } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", data.user.id)
+        .single();
 
-if (roleError || !roleData) {
-  await supabase.auth.signOut();
-  throw new Error("Unable to verify your account permissions.");
-}
+      if (roleError || !roleData) {
+        await supabase.auth.signOut();
+        throw new Error("Unable to verify your account permissions.");
+      }
 
-router.push(roleData.role === "admin" ? "/admin" : "/");
-router.refresh();
+      router.push(roleData.role === "admin" ? "/admin" : "/");
+      router.refresh();
     } catch (err) {
       setMessage(
         err instanceof Error
           ? err.message
-          : "Oops! Let's try again."
+          : "Authentication failed. Please verify credentials."
       );
     } finally {
       setLoading(false);
@@ -58,41 +55,72 @@ router.refresh();
   }
 
   return (
-   <main className="relative isolate flex min-h-screen items-center justify-center overflow-hidden bg-slate-950 px-5 py-12 text-white">
-  {/* Background video */}
-  <video
-    autoPlay
-    muted
-    loop
-    playsInline
-    preload="auto"
-    aria-hidden="true"
-    className="absolute inset-0 z-0 h-full w-full object-cover"
-  >
-    <source src="/4-135665514.mp4" type="video/mp4" />
-  </video>
+    <main className="relative isolate flex min-h-screen items-center justify-center overflow-hidden bg-slate-950 px-4 py-12 text-white sm:px-6">
+      {/* BACKGROUND VIDEO */}
+      <video
+        autoPlay
+        muted
+        loop
+        playsInline
+        preload="auto"
+        aria-hidden="true"
+        className="absolute inset-0 z-0 h-full w-full object-cover"
+      >
+        <source src="/4-135665514.mp4" type="video/mp4" />
+      </video>
 
-  {/* Dark overlay */}
-  <div className="pointer-events-none absolute inset-0 z-10 bg-slate-950/40" />
+      {/* AMBIENT GRADIENT OVERLAY */}
+      <div className="pointer-events-none absolute inset-0 z-10 bg-slate-950/60 backdrop-blur-xs" />
 
-  {/* Existing login card */}
-  <section className="relative z-20 w-full max-w-md rounded-2xl border border-slate-800 bg-slate-900 p-8">
-        <p className="mb-2 text-sm font-semibold tracking-widest text-cyan-400">
-          ORBIT HEALTH
-        </p>
+      {/* CLINICAL AUTH CARD */}
+      <section className="relative z-20 w-full max-w-md rounded-2xl border border-slate-800/90 bg-slate-900/85 p-6 shadow-2xl backdrop-blur-xl sm:p-8">
+        <div className="mb-6 flex items-center gap-3">
+          <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-cyan-500/30 bg-cyan-500/10 text-cyan-400">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.8"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <circle cx="12" cy="12" r="2" />
+              <ellipse
+                cx="12"
+                cy="12"
+                rx="10"
+                ry="4.5"
+                transform="rotate(-30 12 12)"
+              />
+              <circle cx="19.5" cy="7.5" r="1" />
+            </svg>
+          </div>
 
-        <h1 className="mb-2 text-3xl font-bold">
-          Welcome Captain!
-        </h1>
-
-        <p className="mb-8 text-sm text-slate-400">
-          Sign in to access your health dashboard.
-        </p>
-
-        <form onSubmit={handleLogin} className="space-y-5">
           <div>
-            <label htmlFor="email" className="mb-2 block text-sm">
-              Email address
+            <p className="text-[10px] font-bold uppercase tracking-widest text-cyan-400">
+              ORBIT HEALTH
+            </p>
+            <h1 className="text-xl font-bold tracking-tight text-white sm:text-2xl">
+              Astronaut Sign In
+            </h1>
+          </div>
+        </div>
+
+        <p className="mb-6 text-xs leading-relaxed text-slate-400">
+          Enter credentials to access real-time biometric telemetry, clinical insights, and health records.
+        </p>
+
+        <form onSubmit={handleLogin} className="space-y-4">
+          <div>
+            <label
+              htmlFor="email"
+              className="mb-1.5 block text-xs font-semibold text-slate-300"
+            >
+              Email Address
             </label>
             <input
               id="email"
@@ -101,15 +129,26 @@ router.refresh();
               required
               value={email}
               onChange={(event) => setEmail(event.target.value)}
-              className="w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 outline-none focus:border-cyan-400"
-              placeholder="you@example.com"
+              className="w-full rounded-xl border border-slate-700/80 bg-slate-950/70 px-3.5 py-2.5 text-sm text-white placeholder-slate-500 outline-none transition focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400"
+              placeholder="astronaut@mission.orbit"
             />
           </div>
 
           <div>
-            <label htmlFor="password" className="mb-2 block text-sm">
-              Password
-            </label>
+            <div className="mb-1.5 flex items-center justify-between">
+              <label
+                htmlFor="password"
+                className="block text-xs font-semibold text-slate-300"
+              >
+                Password
+              </label>
+              <Link
+                href="/forgot-password"
+                className="text-xs font-medium text-cyan-400 transition hover:text-cyan-300 hover:underline"
+              >
+                Forgot password?
+              </Link>
+            </div>
             <input
               id="password"
               type="password"
@@ -117,42 +156,47 @@ router.refresh();
               required
               value={password}
               onChange={(event) => setPassword(event.target.value)}
-              className="w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 outline-none focus:border-cyan-400"
-              placeholder="Your password"
+              className="w-full rounded-xl border border-slate-700/80 bg-slate-950/70 px-3.5 py-2.5 text-sm text-white placeholder-slate-500 outline-none transition focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400"
+              placeholder="••••••••••••"
             />
           </div>
-<div className="flex justify-end">
-  <Link
-    href="/forgot-password"
-    className="text-sm font-medium text-cyan-400 hover:text-cyan-300 hover:underline"
-  >
-    Forgot password?
-  </Link>
-</div>
+
           {message && (
-            <p role="alert" className="text-sm text-red-400">
+            <div
+              role="alert"
+              className="rounded-xl border border-rose-500/30 bg-rose-950/40 p-3 text-xs font-medium text-rose-300"
+            >
               {message}
-            </p>
+            </div>
           )}
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full rounded-xl bg-cyan-400 px-4 py-3 font-semibold text-slate-950 hover:bg-cyan-300 disabled:opacity-50"
+            className="w-full cursor-pointer rounded-xl bg-cyan-500 py-3 text-sm font-bold text-slate-950 shadow-md transition hover:bg-cyan-400 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60"
           >
-            {loading ? "Signing in..." : "Sign in"}
+            {loading ? (
+              <span className="inline-flex items-center gap-2">
+                <span className="h-4 w-4 animate-spin rounded-full border-2 border-slate-950 border-t-transparent" />
+                <span>Authenticating Mission Access...</span>
+              </span>
+            ) : (
+              "Sign In to Health Portal"
+            )}
           </button>
         </form>
 
-        <p className="mt-6 text-center text-sm text-slate-400">
-          New Here?{" "}
-          <Link
-            href="/signup"
-            className="font-semibold text-cyan-400 hover:underline"
-          >
-            Create an account
-          </Link>
-        </p>
+        <div className="mt-6 border-t border-slate-800/80 pt-4 text-center">
+          <p className="text-xs text-slate-400">
+            New astronaut crew member?{" "}
+            <Link
+              href="/signup"
+              className="font-semibold text-cyan-400 transition hover:text-cyan-300 hover:underline"
+            >
+              Create Crew Account
+            </Link>
+          </p>
+        </div>
       </section>
     </main>
   );

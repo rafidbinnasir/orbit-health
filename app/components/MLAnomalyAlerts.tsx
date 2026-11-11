@@ -99,7 +99,7 @@ export default function MLAnomalyAlerts() {
   return (
     <section
       aria-labelledby="health-events-heading"
-      className="flex flex-col rounded-2xl border border-slate-200/90 bg-white/95 p-5 shadow-sm transition-colors duration-200 sm:p-6 dark:border-slate-800 dark:bg-slate-900/90 dark:shadow-none"
+      className="flex flex-col rounded-2xl border border-slate-200/90 bg-white/95 p-5 shadow-sm backdrop-blur-md transition-colors duration-200 sm:p-6 dark:border-slate-800 dark:bg-slate-900/90 dark:shadow-none"
     >
       {/* SECTION HEADER */}
       <div className="mb-5 flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4 dark:border-slate-800/60">

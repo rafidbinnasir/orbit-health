@@ -135,7 +135,7 @@ export default function AnatomicalMonitor({
     <section
       id="anatomy"
       aria-labelledby="anatomical-monitor-heading"
-      className="scroll-mt-24 rounded-2xl border border-slate-200/90 bg-white/95 p-5 shadow-sm transition-colors duration-200 sm:p-7 dark:border-slate-800 dark:bg-slate-900/90"
+      className="scroll-mt-24 rounded-2xl border border-slate-200/90 bg-white/95 p-5 shadow-sm backdrop-blur-md transition-colors duration-200 sm:p-7 dark:border-slate-800 dark:bg-slate-900/90"
     >
       {/* HEADER */}
       <div className="mb-5 flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4 dark:border-slate-800/70">

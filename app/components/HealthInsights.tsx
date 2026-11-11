@@ -424,7 +424,7 @@ export default function HealthInsights() {
       <section
         id="insights"
         aria-label="Health Insights loading"
-        className="scroll-mt-24 rounded-2xl border border-slate-200/90 bg-white/95 p-4 shadow-sm sm:p-5 dark:border-slate-800 dark:bg-slate-900/90"
+        className="scroll-mt-24 rounded-2xl border border-slate-200/90 bg-white/95 p-5 shadow-sm backdrop-blur-md dark:border-slate-800 dark:bg-slate-900/90"
       >
         {/* Hidden Audio Elements */}
         <audio
@@ -456,7 +456,7 @@ export default function HealthInsights() {
     <section
       id="insights"
       aria-labelledby="insights-heading"
-      className="scroll-mt-24 rounded-2xl border border-slate-200/90 bg-white/95 p-4 shadow-sm transition-colors duration-200 sm:p-5 dark:border-slate-800 dark:bg-slate-900/90"
+      className="scroll-mt-24 rounded-2xl border border-slate-200/90 bg-white/95 p-5 shadow-sm backdrop-blur-md transition-colors duration-200 dark:border-slate-800 dark:bg-slate-900/90"
     >
       {/* Hidden Audio Elements */}
       <audio

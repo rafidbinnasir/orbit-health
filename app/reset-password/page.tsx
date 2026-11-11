@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState } from "react";
@@ -46,7 +45,7 @@ export default function ResetPasswordPage() {
       }
 
       setSuccess(true);
-      setMessage("Your password has been updated successfully.");
+      setMessage("Your password has been updated successfully. Redirecting to login...");
 
       setPassword("");
       setConfirmPassword("");
@@ -69,7 +68,8 @@ export default function ResetPasswordPage() {
   }
 
   return (
-    <main className="relative isolate flex min-h-screen items-center justify-center overflow-hidden bg-slate-950 px-5 py-12 text-white">
+    <main className="relative isolate flex min-h-screen items-center justify-center overflow-hidden bg-slate-950 px-4 py-12 text-white sm:px-6">
+      {/* BACKGROUND VIDEO */}
       <video
         autoPlay
         muted
@@ -82,27 +82,59 @@ export default function ResetPasswordPage() {
         <source src="/4-135665514.mp4" type="video/mp4" />
       </video>
 
-      <div className="pointer-events-none absolute inset-0 z-10 bg-slate-950/50" />
+      {/* AMBIENT OVERLAY */}
+      <div className="pointer-events-none absolute inset-0 z-10 bg-slate-950/60 backdrop-blur-xs" />
 
-      <section className="relative z-20 w-full max-w-md rounded-2xl border border-slate-700 bg-slate-900/90 p-8 shadow-xl backdrop-blur-xl">
-        <p className="mb-2 text-sm font-semibold tracking-widest text-cyan-400">
-          ORBIT HEALTH
-        </p>
+      {/* AUTH CARD */}
+      <section className="relative z-20 w-full max-w-md rounded-2xl border border-slate-800/90 bg-slate-900/85 p-6 shadow-2xl backdrop-blur-xl sm:p-8">
+        <div className="mb-6 flex items-center gap-3">
+          <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-cyan-500/30 bg-cyan-500/10 text-cyan-400">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.8"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <circle cx="12" cy="12" r="2" />
+              <ellipse
+                cx="12"
+                cy="12"
+                rx="10"
+                ry="4.5"
+                transform="rotate(-30 12 12)"
+              />
+              <circle cx="19.5" cy="7.5" r="1" />
+            </svg>
+          </div>
 
-        <h1 className="mb-2 text-3xl font-bold">
-          Reset your password
-        </h1>
-
-        <p className="mb-8 text-sm text-slate-400">
-          Choose a new password for your astronaut account.
-        </p>
-
-        <form onSubmit={handlePasswordUpdate} className="space-y-5">
           <div>
-            <label htmlFor="password" className="mb-2 block text-sm">
-              New password
-            </label>
+            <p className="text-[10px] font-bold uppercase tracking-widest text-cyan-400">
+              ORBIT HEALTH
+            </p>
+            <h1 className="text-xl font-bold tracking-tight text-white sm:text-2xl">
+              Set New Password
+            </h1>
+          </div>
+        </div>
 
+        <p className="mb-6 text-xs leading-relaxed text-slate-400">
+          Enter a secure password for your astronaut profile. Minimum 8 characters.
+        </p>
+
+        <form onSubmit={handlePasswordUpdate} className="space-y-4">
+          <div>
+            <label
+              htmlFor="password"
+              className="mb-1.5 block text-xs font-semibold text-slate-300"
+            >
+              New Password
+            </label>
             <input
               id="password"
               type="password"
@@ -111,16 +143,18 @@ export default function ResetPasswordPage() {
               minLength={8}
               value={password}
               onChange={(event) => setPassword(event.target.value)}
-              className="w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 outline-none focus:border-cyan-400"
+              className="w-full rounded-xl border border-slate-700/80 bg-slate-950/70 px-3.5 py-2.5 text-sm text-white placeholder-slate-500 outline-none transition focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400"
               placeholder="At least 8 characters"
             />
           </div>
 
           <div>
-            <label htmlFor="confirmPassword" className="mb-2 block text-sm">
-              Confirm new password
+            <label
+              htmlFor="confirmPassword"
+              className="mb-1.5 block text-xs font-semibold text-slate-300"
+            >
+              Confirm New Password
             </label>
-
             <input
               id="confirmPassword"
               type="password"
@@ -129,44 +163,52 @@ export default function ResetPasswordPage() {
               minLength={8}
               value={confirmPassword}
               onChange={(event) => setConfirmPassword(event.target.value)}
-              className="w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 outline-none focus:border-cyan-400"
-              placeholder="Enter your new password again"
+              className="w-full rounded-xl border border-slate-700/80 bg-slate-950/70 px-3.5 py-2.5 text-sm text-white placeholder-slate-500 outline-none transition focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400"
+              placeholder="Re-enter password"
             />
           </div>
 
           {message && (
-            <p
+            <div
               role={success ? "status" : "alert"}
               aria-live="polite"
-              className={`rounded-lg border p-3 text-sm ${
+              className={`rounded-xl border p-3 text-xs font-medium ${
                 success
-                  ? "border-cyan-400/20 bg-cyan-400/10 text-cyan-200"
-                  : "border-red-400/20 bg-red-400/10 text-red-300"
+                  ? "border-emerald-500/30 bg-emerald-950/40 text-emerald-200"
+                  : "border-rose-500/30 bg-rose-950/40 text-rose-300"
               }`}
             >
               {message}
-            </p>
+            </div>
           )}
 
-          {!success && (
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full cursor-pointer rounded-xl bg-cyan-400 px-4 py-3 font-semibold text-slate-950 transition hover:bg-cyan-300 disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              {loading ? "Updating password..." : "Update password"}
-            </button>
-          )}
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full cursor-pointer rounded-xl bg-cyan-500 py-3 text-sm font-bold text-slate-950 shadow-md transition hover:bg-cyan-400 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {loading ? (
+              <span className="inline-flex items-center gap-2">
+                <span className="h-4 w-4 animate-spin rounded-full border-2 border-slate-950 border-t-transparent" />
+                <span>Updating Security Credentials...</span>
+              </span>
+            ) : (
+              "Update Mission Password"
+            )}
+          </button>
         </form>
 
-        <p className="mt-6 text-center text-sm text-slate-400">
-          <Link
-            href="/login"
-            className="font-semibold text-cyan-400 hover:underline"
-          >
-            Back to sign in
-          </Link>
-        </p>
+        <div className="mt-6 border-t border-slate-800/80 pt-4 text-center">
+          <p className="text-xs text-slate-400">
+            Remembered your credentials?{" "}
+            <Link
+              href="/login"
+              className="font-semibold text-cyan-400 transition hover:text-cyan-300 hover:underline"
+            >
+              Back to Sign In
+            </Link>
+          </p>
+        </div>
       </section>
     </main>
   );
