@@ -4,12 +4,19 @@
 import { useEffect, useState } from "react";
 import { createClient } from "../../lib/supabase-browser";
 
+type VitalReadingData = {
+  heart_rate: number | null;
+  spo2: number | null;
+  temperature_c: number | null;
+};
+
 type MLPrediction = {
   id: number;
   reading_id: number;
   status: string;
   anomaly_score: number;
   created_at: string;
+  vital_readings: VitalReadingData | VitalReadingData[] | null;
 };
 
 export default function MLAnomalyAlerts() {
@@ -21,25 +28,79 @@ export default function MLAnomalyAlerts() {
     let isActive = true;
 
     async function fetchPredictions() {
-      const supabase = createClient();
+      try {
+        const supabase = createClient();
 
-      const { data, error } = await supabase
-        .from("ml_predictions")
-        .select("id, reading_id, status, anomaly_score, created_at")
-        .eq("status", "ANOMALY")
-        .order("created_at", { ascending: false })
-        .limit(3);
+        console.log("ML anomaly fetch started");
 
-      if (!isActive) return;
+        const { data, error: queryError } = await supabase
+          .from("ml_predictions")
+          .select(`
+            id,
+            reading_id,
+            status,
+            anomaly_score,
+            created_at,
+            vital_readings (
+              heart_rate,
+              spo2,
+              temperature_c
+            )
+          `)
+          .eq("status", "ANOMALY")
+          .order("created_at", { ascending: false })
+          .limit(3);
 
-      if (error) {
-        setError("Unable to load detections.");
-      } else {
-        setPredictions(data ?? []);
+        console.log("=== MLAnomalyAlerts Diagnostic Log ===");
+        console.log("Supabase Query Error:", queryError);
+        console.log(
+          "Complete Raw Query Response:",
+          JSON.stringify(data, null, 2)
+        );
+
+        if (Array.isArray(data)) {
+          data.forEach((item) => {
+            const rawVitals = item.vital_readings;
+
+            const reading = Array.isArray(rawVitals)
+              ? rawVitals[0]
+              : rawVitals;
+
+            console.log(`Prediction #${item.id}:`, {
+              reading_id: item.reading_id,
+              raw_vital_readings: rawVitals,
+              extracted_reading: reading,
+              heart_rate: reading?.heart_rate,
+              spo2: reading?.spo2,
+              temperature_c: reading?.temperature_c,
+            });
+          });
+        }
+
+        console.log("====================================");
+
+        if (!isActive) return;
+
+        if (queryError) {
+          setError(queryError.message);
+          return;
+        }
+
+        setPredictions((data as MLPrediction[]) ?? []);
         setError("");
-      }
+      } catch (err) {
+        if (!isActive) return;
 
-      setLoading(false);
+        setError(
+          err instanceof Error
+            ? err.message
+            : "Failed to load anomaly detections."
+        );
+      } finally {
+        if (isActive) {
+          setLoading(false);
+        }
+      }
     }
 
     fetchPredictions();
@@ -53,15 +114,20 @@ export default function MLAnomalyAlerts() {
   }, []);
 
   return (
-    <section className="flex h-full min-w-0 flex-col rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900/80 dark:shadow-none">
+    <section
+      data-ml-alerts-version="2026-11-12-v3"
+      className="flex h-full min-w-0 flex-col rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900/80 dark:shadow-none"
+    >
       <div className="mb-5 flex items-start justify-between gap-2">
         <div>
           <p className="text-xs font-semibold uppercase tracking-widest text-amber-600 dark:text-amber-400">
             Machine Learning
           </p>
+
           <h2 className="mt-1 text-lg font-semibold text-slate-900 dark:text-white">
             Anomaly Detection
           </h2>
+
           <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
             Isolation Forest analysis
           </p>
@@ -85,6 +151,7 @@ export default function MLAnomalyAlerts() {
           <span className="mb-2 text-sm font-medium text-slate-700 dark:text-slate-200">
             No anomalies detected
           </span>
+
           <span className="text-xs text-slate-500 dark:text-slate-400">
             No unusual patterns recorded recently.
           </span>
@@ -95,39 +162,78 @@ export default function MLAnomalyAlerts() {
             <span className="text-xs text-slate-500 dark:text-slate-400">
               Recent detections
             </span>
+
             <span className="rounded-full bg-amber-50 px-2.5 py-1 text-xs font-semibold text-amber-700 dark:bg-amber-500/10 dark:text-amber-300">
               {predictions.length} shown
             </span>
           </div>
 
-          {predictions.map((item) => (
-            <div
-              key={item.id}
-              className="rounded-xl border border-slate-200 p-3 dark:border-slate-700"
-            >
-              <div className="flex items-center justify-between gap-2">
-                <span className="text-sm font-medium text-slate-800 dark:text-slate-100">
-                  Reading #{item.reading_id}
-                </span>
-                <span className="rounded-md bg-amber-50 px-2 py-1 text-[10px] font-bold tracking-wide text-amber-700 dark:bg-amber-500/10 dark:text-amber-300">
-                  ANOMALY
-                </span>
-              </div>
+          {predictions.map((item) => {
+            const reading = Array.isArray(item.vital_readings)
+              ? item.vital_readings[0]
+              : item.vital_readings;
 
-              <div className="mt-2 flex items-center justify-between gap-2 text-xs">
-                <span className="text-slate-500 dark:text-slate-400">
-                  Anomaly score
-                </span>
-                <span className="font-mono font-medium text-slate-700 dark:text-slate-200">
-                  {item.anomaly_score.toFixed(5)}
-                </span>
-              </div>
+            return (
+              <div
+                key={item.id}
+                className="rounded-xl border border-slate-200 p-3 dark:border-slate-700"
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-sm font-medium text-slate-800 dark:text-slate-100">
+                    Reading #{item.reading_id}
+                  </span>
 
-              <p className="mt-2 text-[11px] text-slate-400 dark:text-slate-500">
-                {new Date(item.created_at).toLocaleString()}
-              </p>
-            </div>
-          ))}
+                  <span className="rounded-md bg-amber-50 px-2 py-1 text-[10px] font-bold tracking-wide text-amber-700 dark:bg-amber-500/10 dark:text-amber-300">
+                    ANOMALY
+                  </span>
+                </div>
+
+                <div className="mt-3 grid grid-cols-3 gap-2">
+                  <div>
+                    <p className="text-[10px] text-slate-500 dark:text-slate-400">
+                      Heart Rate
+                    </p>
+                    <p className="text-sm font-semibold text-slate-800 dark:text-white">
+                      {reading?.heart_rate ?? "--"}{" "}
+                      <span className="text-[10px]">bpm</span>
+                    </p>
+                  </div>
+
+                  <div>
+                    <p className="text-[10px] text-slate-500 dark:text-slate-400">
+                      SpO₂
+                    </p>
+                    <p className="text-sm font-semibold text-slate-800 dark:text-white">
+                      {reading?.spo2 ?? "--"}%
+                    </p>
+                  </div>
+
+                  <div>
+                    <p className="text-[10px] text-slate-500 dark:text-slate-400">
+                      Temperature
+                    </p>
+                    <p className="text-sm font-semibold text-slate-800 dark:text-white">
+                      {reading?.temperature_c ?? "--"}°C
+                    </p>
+                  </div>
+                </div>
+
+                <div className="mt-3 flex items-center justify-between gap-2 border-t border-slate-100 pt-2 dark:border-slate-700">
+                  <span className="text-xs text-slate-500 dark:text-slate-400">
+                    Anomaly score
+                  </span>
+
+                  <span className="font-mono text-xs font-medium text-slate-700 dark:text-slate-200">
+                    {item.anomaly_score.toFixed(5)}
+                  </span>
+                </div>
+
+                <p className="mt-2 text-[11px] text-slate-400 dark:text-slate-500">
+                  {new Date(item.created_at).toLocaleString()}
+                </p>
+              </div>
+            );
+          })}
         </div>
       )}
 
