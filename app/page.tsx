@@ -355,7 +355,7 @@ useEffect(() => {
   </div>
 </div>
 
-{/* MACHINE LEARNING ANOMALY DETECTION */}
+{/* HEALTH EVENTS WORTH REVIEWING */}
 <div className="mb-10">
   <MLAnomalyAlerts />
 </div>
