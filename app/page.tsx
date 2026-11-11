@@ -436,15 +436,6 @@ export default function Home() {
           {/* DASHBOARD BRIEFING & ASTRONAUT IDENTITY HEADER */}
           <header className="mb-8 flex flex-col justify-between gap-6 lg:flex-row lg:items-center">
             <div className="min-w-0 flex-1">
-              <div className="flex items-center gap-2">
-                <span className="inline-flex items-center gap-1 rounded-md border border-cyan-500/30 bg-cyan-500/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-cyan-700 dark:border-cyan-400/30 dark:bg-cyan-400/10 dark:text-cyan-300">
-                  <span className="h-1.5 w-1.5 rounded-full bg-cyan-500 animate-pulse" />
-                  Mission Telemetry Active
-                </span>
-                <span className="text-xs text-slate-400 dark:text-slate-500">
-                  5s Interval
-                </span>
-              </div>
 
               <div className="mt-2">
                 <TypingHeading />
