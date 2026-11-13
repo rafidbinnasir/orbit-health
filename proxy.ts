@@ -44,7 +44,8 @@ export async function proxy(request: NextRequest) {
 const isPublicAuthPage =
   isAuthPage ||
   pathname === "/forgot-password" ||
-  pathname === "/reset-password";
+  pathname === "/reset-password" ||
+  pathname === "/auth/callback";
 
 const isApiRoute = pathname.startsWith("/api");
 

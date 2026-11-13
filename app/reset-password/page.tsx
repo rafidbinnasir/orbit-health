@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "../../lib/supabase-browser";
@@ -13,7 +13,20 @@ export default function ResetPasswordPage() {
   const [message, setMessage] = useState("");
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
+useEffect(() => {
+  async function verifyRecoverySession() {
+    const supabase = createClient();
+    const { data, error } = await supabase.auth.getSession();
 
+    if (error || !data.session) {
+      setMessage(
+        "Your password reset session is invalid or has expired. Please request a new reset link."
+      );
+    }
+  }
+
+  verifyRecoverySession();
+}, []);
   async function handlePasswordUpdate(
     event: React.FormEvent<HTMLFormElement>
   ) {
@@ -36,10 +49,16 @@ export default function ResetPasswordPage() {
     try {
       const supabase = createClient();
 
-      const { error } = await supabase.auth.updateUser({
-        password,
-      });
+const { data: sessionData, error: sessionError } =
+  await supabase.auth.getSession();
 
+if (sessionError || !sessionData.session) {
+  throw new Error(
+    "Your password reset session is invalid or has expired. Please request a new reset link."
+  );
+}
+
+const { error } = await supabase.auth.updateUser({ password });
       if (error) {
         throw error;
       }
